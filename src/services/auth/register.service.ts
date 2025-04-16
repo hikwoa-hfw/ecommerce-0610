@@ -11,7 +11,6 @@ export const registerService = async (body: User) => {
   const existingUser = await prisma.user.findFirst({
     where: { email: body.email },
   });
-
   if (existingUser) {
     throw new ApiError("Email already existt", 400);
   }
