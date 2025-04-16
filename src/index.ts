@@ -3,6 +3,7 @@ import cors from "cors";
 import { errorMiddleware } from "./middleware/error.middleware";
 import sampleRouter from "./routes/sample.router";
 import authRouter from "./routes/auth.router";
+import productRouter from "./routes/product.router"
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(express.json());
 
 app.use("/samples", sampleRouter);
 app.use("/auth", authRouter);
+app.use("/products", productRouter)
 
 app.use(errorMiddleware);
 
