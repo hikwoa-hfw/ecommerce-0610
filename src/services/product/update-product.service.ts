@@ -8,31 +8,27 @@ export const updateProductService = async (
   body: Partial<Product>
 ) => {
   const product = await prisma.product.findFirst({
-    where: { id },
+    where: { id, deletedAt: null },
   });
 
   if (!product) {
-    throw new ApiError("Product doesn't exist", 400);
+    throw new ApiError("Invalid product id", 400);
   }
 
-  let { name, slug, price, stock, storeId } = body;
-
-  if (name) {
+  if (body.name) {
     const existingProduct = await prisma.product.findFirst({
-      where: {
-        name,
-      },
+      where: { name: body.name },
     });
 
     if (existingProduct) {
       throw new ApiError("Product name already exist", 400);
     }
-    
-    slug = generateSlug(name);
+    const slug = generateSlug(body.name);
+    body.slug = slug;
   }
-
+  console.log(body)
   return await prisma.product.update({
     where: { id },
-    data: {...body, slug}
+    data: body,
   });
 };
