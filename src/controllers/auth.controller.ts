@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { registerService } from "../services/auth/register.service";
 import { loginService } from "../services/auth/login.service";
+import { registerService } from "../services/auth/register.service";
 
 export const registerController = async (
   req: Request,

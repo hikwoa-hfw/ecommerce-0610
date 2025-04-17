@@ -7,9 +7,11 @@ interface GetProductsService extends PaginationQueryParams {
 }
 
 export const getProductsService = async (queries: GetProductsService) => {
-  const { page, search, sortBy, sortOrder, take } = queries;
+  const { page, take, sortBy, sortOrder, search } = queries;
 
-  const whereClause: Prisma.ProductWhereInput = {};
+  const whereClause: Prisma.ProductWhereInput = {
+    deletedAt: null,
+  };
 
   if (search) {
     whereClause.name = { contains: search, mode: "insensitive" };
@@ -17,14 +19,12 @@ export const getProductsService = async (queries: GetProductsService) => {
 
   const products = await prisma.product.findMany({
     where: whereClause,
-    take,
+    take: take,
     skip: (page - 1) * take,
     orderBy: { [sortBy]: sortOrder },
   });
 
-  const count = await prisma.product.count({
-    where: whereClause,
-  });
+  const count = await prisma.product.count({ where: whereClause });
 
   return {
     data: products,

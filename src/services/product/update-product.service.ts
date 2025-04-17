@@ -25,13 +25,11 @@ export const updateProductService = async (
     }
     const slug = generateSlug(body.name);
     body.slug = slug;
-
   }
 
   return await prisma.product.update({
     where: { id },
 
     data: body,
-
   });
 };
