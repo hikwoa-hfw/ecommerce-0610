@@ -1,10 +1,13 @@
 import { Router } from "express";
-import { loginController, registerController } from "../controllers/auth.controller";
+import {
+  loginController,
+  registerController,
+} from "../controllers/auth.controller";
+import { validateLogin } from "../validators/auth.validator";
 
+const router = Router();
 
-const router = Router()
+router.post("/register", registerController);
+router.post("/login", validateLogin, loginController);
 
-router.post("/register", registerController)
-router.post("/login", loginController)
-
-export default router
+export default router;
