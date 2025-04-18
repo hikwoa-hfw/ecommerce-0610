@@ -3,9 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // directUrl = env("DIRECT_URL")
 }
 
 model Sample {
@@ -18,15 +18,16 @@ model Sample {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  fullName  String
-  email     String    @unique
-  password  String
-  role      Role      @default(USER)
-  deletedAt DateTime?
-  updatedAt DateTime  @updatedAt
-  createdAt DateTime  @default(now())
-  stores    Store[]
+  id          Int           @id @default(autoincrement())
+  fullName    String
+  email       String        @unique
+  password    String
+  role        Role          @default(USER)
+  deletedAt   DateTime?
+  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime      @default(now())
+  stores      Store[]
+  transactions Transaction[]
 
   @@map("users")
 }
@@ -50,17 +51,42 @@ model Store {
 }
 
 model Product {
-  id        Int       @id @default(autoincrement())
-  slug      String    @unique
-  thumbnail String
-  name      String
-  price     Int
-  stock     Int
-  storeId   Int
-  store     Store     @relation(fields: [storeId], references: [id])
-  deletedAt DateTime?
-  updatedAt DateTime  @updatedAt
-  createdAt DateTime  @default(now())
+  id          Int           @id @default(autoincrement())
+  slug        String        @unique
+  thumbnail   String
+  name        String
+  price       Int
+  stock       Int
+  storeId     Int
+  store       Store         @relation(fields: [storeId], references: [id])
+  deletedAt   DateTime?
+  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime      @default(now())
+  transactions Transaction[]
 
   @@map("products")
+}
+
+model Transaction {
+  id           Int               @id @default(autoincrement())
+  uuid         String            @unique @default(uuid())
+  qty          Int
+  productId    Int
+  product      Product           @relation(fields: [productId], references: [id])
+  status       TransactionStatus @default(WAITING_FOR_PAYMENT)
+  paymentProof String?
+  userId       Int
+  user         User              @relation(fields: [userId], references: [id])
+  updatedAt    DateTime          @updatedAt
+  createdAt    DateTime          @default(now())
+
+  @@map("transactions")
+}
+
+enum TransactionStatus {
+  WAITING_FOR_PAYMENT
+  WAITING_CONFIRMATION
+  PAID
+  REJECT
+  EXPIRED
 }
